@@ -6,7 +6,7 @@
 
     <groupId>de.louidev</groupId>
     <artifactId>DuckCoder</artifactId>
-    <version>0.12.1</version>
+    <version>0.12.2</version>
 
     <properties>
         <maven.compiler.source>19</maven.compiler.source>

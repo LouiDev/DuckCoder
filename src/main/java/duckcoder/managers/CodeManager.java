@@ -166,8 +166,13 @@ public class CodeManager {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
-                    isComplete = true;
+                    int reg = getRegisterIndex(params.get(1));
+                    if(reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                        isComplete = true;
+                    } else {
+                        moveAmount = getRegisterValue(reg);
+                    }
                 }
             }
 
@@ -190,8 +195,13 @@ public class CodeManager {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
-                    isComplete = true;
+                    int reg = getRegisterIndex(params.get(1));
+                    if(reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                        isComplete = true;
+                    } else {
+                        moveAmount = getRegisterValue(reg);
+                    }
                 }
             }
 
@@ -214,8 +224,13 @@ public class CodeManager {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
-                    isComplete = true;
+                    int reg = getRegisterIndex(params.get(1));
+                    if(reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                        isComplete = true;
+                    } else {
+                        moveAmount = getRegisterValue(reg);
+                    }
                 }
             }
 
@@ -238,8 +253,13 @@ public class CodeManager {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
-                    isComplete = true;
+                    int reg = getRegisterIndex(params.get(1));
+                    if(reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                        isComplete = true;
+                    } else {
+                        moveAmount = getRegisterValue(reg);
+                    }
                 }
             }
 
