@@ -177,7 +177,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1)) {
+            if(duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1) && duck.getX() + moveAmount > 0) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -206,7 +206,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getX() - moveAmount < 0) {
+            if(duck.getX() - moveAmount < 0 && duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1)) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -235,7 +235,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getY() - moveAmount < 0) {
+            if(duck.getY() - moveAmount < 0 && duck.getY() - moveAmount < (MainWindow.gridSizeVertical - 1)) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -264,7 +264,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getY() + moveAmount > (MainWindow.gridSizeVertical - 1)) {
+            if(duck.getY() + moveAmount > (MainWindow.gridSizeVertical - 1) && duck.getY() + moveAmount > 0) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
