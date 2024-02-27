@@ -1,0 +1,85 @@
+© DuckCoder 2024 - ALPHA Release v0.12.2
+
+========================================
+
+Bitte beachten Sie, dass DuckScript bis jetzt nur sehr simple Logik ermöglicht, da bis jetzt auch nur grundlegende Funktionen umgesetzt wurden.
+
+DuckScript hat kein gesondertes Dateiformat, sondern basiert auf Textdokumenten (.txt).
+Ein Skript kann also in einem simplen Texteditor geschrieben werden.
+Es empfiehlt sich aber Notepad++ zu benutzen, da dies das Programmieren deutlich erleichtert.
+Im mitgelieferten Ordner "Beispielskripte" sind beispielhafte Skripte enthalten.
+
+WICHTIG:
+- Jede Zeile *muss* mit einem ; beendet werden.
+- Es darf keine leeren Zeilen geben.
+- Es können noch keine Kommentare hinzugefügt werden.
+
+Es wird empfohlen, das Skript immer mit dem "beenden" Befehl zu beenden.
+
+Register sind Speicherzellen, welche jeweils eine Ganzzahl (auch negative) enthalten.
+Es gibt insgesamt 20 Register, welche von 1 bis 20 durchnummeriert sind.
+Standardmäßig ist jeder Wert von jedem Register auf 0 gesetzt.
+
+Befehle, welche die Ente beeinflussen werden BLAU hervorgehoben.
+Befehle, welche den Befehlszeiger beeinflussen, werden ROT hervorgehoben.
+Befehle, welche die Register beeinflussen, werden GRÜN hervorgehoben.
+Attribute werden MAGENTA hervorgehoben (Außer register 1-20, diese werden ebenfalls GRÜN hervorgehoben).
+
+Im Folgenden werden nun alle Befehle und Attribute erläutert.
+Parameter mit [] Klammern sind *pflicht*.
+Parameter mit () Klammern sind *optional*.
+
+
+--- ATTRIBUTE ---
+- istrechtswand
+<Boolean> True/False Rechts von Ente befindet sich eine Wand
+
+- istlinkswand
+<Boolean> True/False Links von Ente befindet sich eine Wand
+
+- istobenwand
+<Boolean> True/False Oberhalb von Ente befindet sich eine Wand
+
+- istuntenwand
+<Boolean> True/False Unterhalb von Ente befindet sich eine Wand
+
+- register:[1-20]
+<Integer> Ganzzahl innerhalb des angegeben Registers
+
+
+--- BEFEHLE ---
+- vorwärtslaufen (register:[1-20] ODER Integer)
+Ente läuft einen Schritt nach vorne ODER läuft x Schritte nach vorne wenn Register oder Ganzzahl angegeben
+
+- rückwärtslaufen (register:[1-20] ODER Integer)
+Ente läuft einen Schritt nach hinten ODER läuft x Schritte nach hinten wenn Register oder Ganzzahl angegeben
+
+- hochlaufen (register:[1-20] ODER Integer)
+Ente läuft einen Schritt nach oben ODER läuft x Schritte nach oben wenn Register oder Ganzzahl angegeben
+
+- runterlaufen (register:[1-20] ODER Integer)
+Ente läuft einen Schritt nach unten ODER läuft x Schritte nach unten wenn Register oder Ganzzahl angegeben
+
+- teleportieren [register:[1-20] ODER Integer] [register:[1-20] ODER Integer)
+Teleportiert Ente an angegebene x und y Koordinate
+
+- beenden
+Beendet das Skript
+
+- springen [Integer]
+Springt in die angegebene Zeile
+
+- springewenn [Boolean-Attribut] [Integer]
+Springt in die angegebene Zeile, sofern das Boolean-Attribut True ist
+
+- springenichtwenn [Boolean-Attribut] [Integer]
+Springt in die angegebene Zeile, sofern das Boolean-Attribut False ist
+
+- registersetzen [register:[1-20]] [Integer]
+Setzt den Wert des angegeben Registers auf die angegebene Integer Zahl
+
+- registererhöhen [register:[1-20]] [Integer ODER register:[1-20]]
+Erhöht den Wert des angegeben Registers um den angegebenen Integer ODER um den Wert des angegebenen Registers
+
+- registerverringern [register:[1-20]] [Integer ODER register:[1-20]]
+Verringert den Wert des angegeben Registers um den angegebenen Integer ODER um den Wert des angegebenen Registers
