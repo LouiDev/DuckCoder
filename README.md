@@ -9,7 +9,7 @@ Außerdem enthält das Programm 20 Register, wo ganze (auch negative) Ganzzahlen
 DuckCoder ist noch in Entwicklung und unvollständig. Grundlegende Funktionen sind aber schon realisiert. Aktuell werden weitere Befehle dem Programm hinzugefügt.
 
 # ALPHA Release - v0.12.2
-Zurzeit gibt es einen Alpha Release zum austesten der aktuellen Funktionen.
+Zurzeit gibt es einen Alpha Release zum Austesten der aktuellen Funktionen.
 
 Der Download dazu kann [hier](https://www.dropbox.com/scl/fi/xb50elfynvfjj36fidt6j/ALPHA-Release-v0-12-2.zip?rlkey=k37lgtw4jjj5glwrsr15n63bf&dl=0) (Dropbox Link) gefunden werden.
 
