@@ -7,6 +7,8 @@ Somit können einfache "if-Abfragen" oder Schleifen durch "springewenn" oder "sp
 Außerdem enthält das Programm 20 Register, wo ganze (auch negative) Ganzzahlen gespeichert und später im Skript verwendet werden können.
 
 DuckCoder ist noch in Entwicklung und unvollständig. Grundlegende Funktionen sind aber schon realisiert. Aktuell werden weitere Befehle dem Programm hinzugefügt.
+Auf dem [DuckCoder Discord Server](https://discord.gg/8bjtfwsBxH) werden regelmäßig updates und Ankündigungen gepostet. Dort findet man auch alle wichtigen Dateien, Dokumentationen und anderes an einem Ort.
+Außerdem gibt es dort die Möglichkeit für Feedback und Feature Vorschläge.
 
 # Downloads
 Zurzeit gibt es nur einen Alpha Release als Download zum Austesten der aktuellen Funktionen.
