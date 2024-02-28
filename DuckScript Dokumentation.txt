@@ -1,4 +1,4 @@
-© DuckCoder 2024 - ALPHA Release v0.12.2
+© DuckCoder 2024 - ALPHA Release v0.13.6
 
 ========================================
 
@@ -10,9 +10,10 @@ Es empfiehlt sich aber Notepad++ zu benutzen, da dies das Programmieren deutlich
 Im mitgelieferten Ordner "Beispielskripte" sind beispielhafte Skripte enthalten.
 
 WICHTIG:
-- Jede Zeile *muss* mit einem ; beendet werden.
-- Es darf keine leeren Zeilen geben.
-- Es können noch keine Kommentare hinzugefügt werden.
+- Ein ; am Ende der Zeile ist optional, aber trotzdem zu empfehlen.
+- Leere Zeilen werden ignoriert.
+- Eingeklammerter Text wird ignoriert. Dies kann als Label für Codeabschnitte benutzt werden. Z.B.: (Schleifenanfang)
+- Text, der mit // beginnt, wird ignoriert. Dies kann als langer Kommentar für Codeabschnitte genutzt werden. Z.B.: // Folgender Code lässt die Ente vorwärtslaufen
 
 Es wird empfohlen, das Skript immer mit dem "beenden" Befehl zu beenden.
 
@@ -83,3 +84,7 @@ Erhöht den Wert des angegeben Registers um den angegebenen Integer ODER um den 
 
 - registerverringern [register:[1-20]] [Integer ODER register:[1-20]]
 Verringert den Wert des angegeben Registers um den angegebenen Integer ODER um den Wert des angegebenen Registers
+
+- springewennregister [register:[1-20]] [Operant] [Integer ODER register:1-20]] [Integer]
+Springt in den angegeben Zeilenindex, wenn der Wert aus dem ersten angegeben Register verglichen durch den angegeben Operanten mit dem zweiten angegeben Register True liefert.
+Zurzeit gibt es folgende Operanten: "<", "<=", "==", ">", ">="
