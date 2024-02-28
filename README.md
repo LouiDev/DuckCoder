@@ -17,5 +17,5 @@ In Zukunft werden hier alle möglichen Downloads aufgelistet.
 Alle nötigen Infos sind in "README.txt" und "DuckScript-Dokumentation.txt" enthalten.
 
 ## Alpha Releases
-- v0.13.6 [Download](https://www.dropbox.com/scl/fi/217o6de4b7anpp3kdgv74/ALPHA-Release-v0-13-6.zip?rlkey=7y3fyuueqf1sm7epw26jv7v1k&dl=0)
+- v0.13.6 [Download](https://www.dropbox.com/scl/fi/24lp6vdx90y148a13yzj3/ALPHA-Release-v0-13-6.zip?rlkey=irh41n6xal9ar2wam024nyueb&dl=0)
 - v0.12.2 [Download](https://www.dropbox.com/scl/fi/xb50elfynvfjj36fidt6j/ALPHA-Release-v0-12-2.zip?rlkey=k37lgtw4jjj5glwrsr15n63bf&dl=0)
