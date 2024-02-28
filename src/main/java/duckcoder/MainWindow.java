@@ -210,7 +210,7 @@ public class MainWindow {
         }
 
         private void drawCode(Graphics g) {
-            int offsetX = 0;
+            int offsetX;
 
             for(int i = 0; i < codeDisplay.size(); i++) {
                 Graphics2D code = (Graphics2D) g;
@@ -227,10 +227,14 @@ public class MainWindow {
                     }
                 }
 
+                boolean semicolon = false;
                 String[] content = text.split("\\s+");
                 for(String toDisplay : content) {
+                    if(toDisplay.contains(";")) {
+                        semicolon = true;
+                        toDisplay = toDisplay.replaceAll(";", "");
+                    }
                     toDisplay = toDisplay.stripLeading();
-                    toDisplay = toDisplay.replaceAll(";", "");
 
                     Color color = Color.BLACK;
                     if (codeManager.getCodeColor(toDisplay) != null) {
@@ -250,7 +254,7 @@ public class MainWindow {
                     offsetX += g.getFontMetrics().stringWidth(toDisplay);
                 }
                 g.setColor(Color.BLACK);
-                code.drawString(";", codeDisplayOriginX + offsetX, codeDisplayOriginY + i * 21);
+                if(semicolon) code.drawString(";", codeDisplayOriginX + offsetX, codeDisplayOriginY + i * 21);
             }
         }
 

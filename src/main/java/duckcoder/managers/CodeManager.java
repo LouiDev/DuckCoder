@@ -9,10 +9,7 @@ import duckcoder.gameobjects.Displayable;
 import duckcoder.gameobjects.Duck;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -49,50 +46,55 @@ public class CodeManager {
 
     // Schreitet im Programmcode voran
     public void update() {
-        if(!isComplete) {
+        if (!isComplete) {
             String raw = rawInput.get(commandPointer);
             String[] params = raw.split(" ");
             String command = params[0];
 
-            if(raw.startsWith("/") || (raw.startsWith("(") && raw.endsWith(")"))) {
-                lastExecuted = commandPointer;
+            lastExecuted = commandPointer;
+            pointer.setLocation(10, 75 + lastExecuted * 21);
+
+            if (raw.isBlank() || raw.isEmpty() || raw.stripLeading().contains("//") || raw.stripLeading().startsWith("(") && raw.endsWith(")")) {
                 commandPointer++;
                 return;
             }
 
-            if(actionCommands.containsKey(command)) {
-                lastExecuted = commandPointer;
-                pointer.setLocation(10, 75 + lastExecuted * 21);
+            if (actionCommands.containsKey(command)) {
+                if (actionCommands.get(command).execute(List.of(params))) commandPointer++;
 
-                if(actionCommands.get(command).execute(List.of(params))) commandPointer++;
-
-                if(commandPointer == scriptSize) {
+                if (commandPointer == scriptSize) {
                     isComplete = true;
                     MainWindow.panel.stopTimer();
                 }
             } else {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_INVALID_COMMAND, commandPointer + 1);
-                pointer.setLocation(10, 75 + lastExecuted * 21);
                 isComplete = true;
             }
         }
     }
 
-    // Lädt die angegeben Datei und bereit alles für die Ausführung vor
+    // Lädt die angegebene Datei und bereit alles für die Ausführung vor
     public List<String> load(File file) {
         rawInput = new ArrayList<>();
-        List<String> display;
-        try {
-            String content = new String(Files.readAllBytes(Path.of(file.getAbsolutePath())));
-            display = List.of(content.split("\n"));
+        List<String> display = new ArrayList<>();
 
-            content = content.replaceAll("\n", "");
-            String[] inputs = content.split(";");
-            for(String s : inputs) {
-                rawInput.add(s.stripLeading());
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader reader = new BufferedReader(fr);
+            String line = reader.readLine();
+
+            while (line != null) {
+                display.add(line);
+
+                if (line.contains(";")) line = line.replaceAll(";", "");
+                line = line.stripLeading();
+                rawInput.add(line);
+
+                line = reader.readLine();
             }
 
-            scriptSize = rawInput.size();
+            fr.close();
+            reader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -102,6 +104,7 @@ public class CodeManager {
 
         pointer.setLocation(10, -100);
 
+        scriptSize = rawInput.size();
         return display;
     }
 
@@ -116,6 +119,7 @@ public class CodeManager {
         codeColors.put("springen", Color.RED);
         codeColors.put("springewenn", Color.RED);
         codeColors.put("springenichtwenn", Color.RED);
+        codeColors.put("springewennregister", Color.RED);
 
         codeColors.put("istrechtswand", Color.MAGENTA);
         codeColors.put("istlinkswand", Color.MAGENTA);
@@ -147,28 +151,28 @@ public class CodeManager {
         codeColors.put("register:19", green);
         codeColors.put("register:20", green);
 
-        for(int i = 1; i < 21; i++) {
+        for (int i = 1; i < 21; i++) {
             register.put(i, 0);
         }
 
         //Beenden
         actionCommands.put("beenden", params -> {
-           isComplete = true;
-           MainWindow.panel.printConsoleMessage("Programm beendet", Color.BLUE, Font.PLAIN);
-           return true;
+            isComplete = true;
+            MainWindow.panel.printConsoleMessage("Programm beendet", Color.BLUE, Font.PLAIN);
+            return true;
         });
 
         //Forwärtslaufen
         actionCommands.put("vorwärtslaufen", params -> {
             int moveAmount = 1;
 
-            if(params.size() > 1) {
+            if (params.size() > 1) {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
                     int reg = getRegisterIndex(params.get(1));
-                    if(reg == -1) {
-                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                    if (reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                         isComplete = true;
                     } else {
                         moveAmount = getRegisterValue(reg);
@@ -177,7 +181,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1) && duck.getX() + moveAmount > 0) {
+            if (duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1) || duck.getX() + moveAmount > 0) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -191,13 +195,13 @@ public class CodeManager {
         actionCommands.put("rückwärtslaufen", params -> {
             int moveAmount = 1;
 
-            if(params.size() > 1) {
+            if (params.size() > 1) {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
                     int reg = getRegisterIndex(params.get(1));
-                    if(reg == -1) {
-                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                    if (reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                         isComplete = true;
                     } else {
                         moveAmount = getRegisterValue(reg);
@@ -206,7 +210,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getX() - moveAmount < 0 && duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1)) {
+            if (duck.getX() - moveAmount < 0 || duck.getX() + moveAmount > (MainWindow.gridSizeHorizontal - 1)) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -220,13 +224,13 @@ public class CodeManager {
         actionCommands.put("hochlaufen", params -> {
             int moveAmount = 1;
 
-            if(params.size() > 1) {
+            if (params.size() > 1) {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
                     int reg = getRegisterIndex(params.get(1));
-                    if(reg == -1) {
-                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                    if (reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                         isComplete = true;
                     } else {
                         moveAmount = getRegisterValue(reg);
@@ -235,7 +239,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getY() - moveAmount < 0 && duck.getY() - moveAmount < (MainWindow.gridSizeVertical - 1)) {
+            if (duck.getY() - moveAmount < 0 || duck.getY() - moveAmount < (MainWindow.gridSizeVertical - 1)) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -249,13 +253,13 @@ public class CodeManager {
         actionCommands.put("runterlaufen", params -> {
             int moveAmount = 1;
 
-            if(params.size() > 1) {
+            if (params.size() > 1) {
                 try {
                     moveAmount = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException ignored) {
                     int reg = getRegisterIndex(params.get(1));
-                    if(reg == -1) {
-                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER,commandPointer + 1, params.get(1));
+                    if (reg == -1) {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                         isComplete = true;
                     } else {
                         moveAmount = getRegisterValue(reg);
@@ -264,7 +268,7 @@ public class CodeManager {
             }
 
             Duck duck = MainWindow.duck;
-            if(duck.getY() + moveAmount > (MainWindow.gridSizeVertical - 1) && duck.getY() + moveAmount > 0) {
+            if (duck.getY() + moveAmount > (MainWindow.gridSizeVertical - 1) || duck.getY() + moveAmount > 0) {
                 MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                 isComplete = true;
             } else {
@@ -276,10 +280,10 @@ public class CodeManager {
 
         //Springen
         actionCommands.put("springen", params -> {
-            if(params.size() > 1) {
+            if (params.size() > 1) {
                 checkAndJump(params, 1);
             } else {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"Zeilenindex");
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Zeilenindex");
                 isComplete = true;
             }
 
@@ -288,26 +292,26 @@ public class CodeManager {
 
         //Springewenn
         actionCommands.put("springewenn", params -> {
-            if(params.size() > 2) {
+            if (params.size() > 2) {
                 boolean match = false;
-                for(String key : booleanReturnCommands.keySet()) {
+                for (String key : booleanReturnCommands.keySet()) {
                     if (params.get(1).contains(key)) {
                         match = true;
                         break;
                     }
                 }
 
-                if(match) {
-                    if(booleanReturnCommands.get(params.get(1)).get()) {
+                if (match) {
+                    if (booleanReturnCommands.get(params.get(1)).get()) {
                         checkAndJump(params, 2);
                         return false;
                     }
                 } else {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOWN_ATTRIBUTE, commandPointer + 1, params.get(1));
                     isComplete = true;
                 }
             } else {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"Attribut, Zeilenindex");
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Attribut, Zeilenindex");
                 isComplete = true;
             }
             return true;
@@ -315,49 +319,49 @@ public class CodeManager {
 
         //Springenichtwenn
         actionCommands.put("springenichtwenn", params -> {
-            if(params.size() > 2) {
+            if (params.size() > 2) {
                 boolean match = false;
-                for(String key : booleanReturnCommands.keySet()) {
+                for (String key : booleanReturnCommands.keySet()) {
                     if (params.get(1).contains(key)) {
                         match = true;
                         break;
                     }
                 }
 
-                if(match) {
-                    if(!booleanReturnCommands.get(params.get(1)).get()) {
+                if (match) {
+                    if (!booleanReturnCommands.get(params.get(1)).get()) {
                         checkAndJump(params, 2);
                         return false;
                     }
                 } else {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOWN_ATTRIBUTE, commandPointer + 1, params.get(1));
                     isComplete = true;
                 }
             } else {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"Attribut, Zeilenindex");
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Attribut, Zeilenindex");
                 isComplete = true;
             }
             return true;
         });
 
         actionCommands.put("teleportieren", params -> {
-            if(params.size() > 2) {
+            if (params.size() > 2) {
                 int xPos = -1;
                 int yPos = -1;
 
                 try {
                     xPos = Integer.parseInt(params.get(1));
                 } catch (NumberFormatException e) {
-                    if(params.get(1).startsWith("register:")) {
+                    if (params.get(1).startsWith("register:")) {
                         int reg = getRegisterIndex(params.get(1));
-                        if(reg == -1) {
-                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                        if (reg == -1) {
+                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                             isComplete = true;
                         } else {
                             xPos = (int) registerReturnCommands.get("register:").get(reg);
                         }
                     } else {
-                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOWN_ATTRIBUTE, commandPointer + 1, params.get(1));
                         isComplete = true;
                     }
                 }
@@ -365,28 +369,28 @@ public class CodeManager {
                 try {
                     yPos = Integer.parseInt(params.get(2));
                 } catch (Exception e) {
-                    if(params.get(2).startsWith("register:")) {
+                    if (params.get(2).startsWith("register:")) {
                         int reg = getRegisterIndex(params.get(2));
-                        if(reg == -1) {
-                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(2));
+                        if (reg == -1) {
+                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(2));
                             isComplete = true;
                         } else {
                             yPos = (int) registerReturnCommands.get("register:").get(reg);
                         }
                     } else {
-                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOWN_ATTRIBUTE, commandPointer + 1, params.get(1));
                         isComplete = true;
                     }
                 }
 
-                if(xPos < 1 || xPos > MainWindow.gridSizeHorizontal || yPos < 1 || yPos > MainWindow.gridSizeVertical) {
+                if (xPos < 1 || xPos > MainWindow.gridSizeHorizontal || yPos < 1 || yPos > MainWindow.gridSizeVertical) {
                     MainWindow.exceptions.throwErr(Exceptions.EXC_CAN_NOT_LEAVE_GRID, commandPointer + 1);
                     isComplete = true;
                 } else {
                     MainWindow.duck.setLocation(xPos - 1, yPos - 1);
                 }
             } else {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"x Koordinate, y Koordinate");
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "x Koordinate, y Koordinate");
                 isComplete = true;
             }
 
@@ -395,15 +399,15 @@ public class CodeManager {
 
         //Register setzen
         actionCommands.put("registersetzen", params -> {
-            if(params.size() > 2) {
-                if(params.get(1).startsWith("register:")) {
+            if (params.size() > 2) {
+                if (params.get(1).startsWith("register:")) {
                     try {
                         int num = Integer.parseInt(params.get(2));
                         String[] regArgs = params.get(1).split(":");
                         try {
                             int regIndex = Integer.parseInt(regArgs[1]);
-                            if(regIndex < 1 || regIndex > 20) {
-                                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                            if (regIndex < 1 || regIndex > 20) {
+                                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                                 isComplete = true;
                             } else {
                                 register.put(regIndex, num);
@@ -422,7 +426,7 @@ public class CodeManager {
                     isComplete = true;
                 }
             } else {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"Register, Integer");
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Register, Integer");
                 isComplete = true;
             }
             return true;
@@ -430,10 +434,10 @@ public class CodeManager {
 
         //Registererhöhen
         actionCommands.put("registererhöhen", params -> {
-           if(params.size() > 2) {
+            if (params.size() > 2) {
                 int reg = getRegisterIndex(params.get(1));
-                if(reg == -1) {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                if (reg == -1) {
+                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                     isComplete = true;
                 } else {
                     int increase = 0;
@@ -441,8 +445,8 @@ public class CodeManager {
                         increase = Integer.parseInt(params.get(2));
                     } catch (NumberFormatException e) {
                         int increaseReg = getRegisterIndex(params.get(2));
-                        if(increaseReg == -1) {
-                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(2));
+                        if (increaseReg == -1) {
+                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(2));
                             isComplete = true;
                         } else {
                             increase = getRegisterValue(increaseReg);
@@ -453,19 +457,19 @@ public class CodeManager {
                     value += increase;
                     register.put(reg, value);
                 }
-           } else {
-               MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"Register, Integer ODER Register");
-               isComplete = true;
-           }
+            } else {
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Register, Integer ODER Register");
+                isComplete = true;
+            }
             return true;
         });
 
         //Registererhöhen
         actionCommands.put("registerverringern", params -> {
-            if(params.size() > 2) {
+            if (params.size() > 2) {
                 int reg = getRegisterIndex(params.get(1));
-                if(reg == -1) {
-                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(1));
+                if (reg == -1) {
+                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(1));
                     isComplete = true;
                 } else {
                     int increase = 0;
@@ -473,8 +477,8 @@ public class CodeManager {
                         increase = Integer.parseInt(params.get(2));
                     } catch (NumberFormatException e) {
                         int increaseReg = getRegisterIndex(params.get(2));
-                        if(increaseReg == -1) {
-                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(2));
+                        if (increaseReg == -1) {
+                            MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, params.get(2));
                             isComplete = true;
                         } else {
                             increase = getRegisterValue(increaseReg);
@@ -486,9 +490,87 @@ public class CodeManager {
                     register.put(reg, value);
                 }
             } else {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1,"Register, Integer ODER Register");
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Register, Integer ODER Register");
                 isComplete = true;
             }
+            return true;
+        });
+
+        // Springewennregister
+        actionCommands.put("springewennregister", params -> {
+            if (params.size() > 4) {
+                String param1 = params.get(1);
+                String param2 = params.get(2);
+                String param3 = params.get(3);
+                int reg = getRegisterIndex(param1);
+                if (reg == -1) {
+                    MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, param1);
+                    isComplete = true;
+                } else {
+                    int num = getRegisterValue(reg);
+                    if (param2.equals("<") || param2.equals("<=") || param2.equals("==") || param2.equals(">=") || param2.equals(">")) {
+                        int toCompare;
+                        if(param3.startsWith("register:")) {
+                            int reg2 = getRegisterIndex(param3);
+                            if (reg2 == -1) {
+                                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOW_REGISTER, commandPointer + 1, param1);
+                                isComplete = true;
+                                return true;
+                            } else {
+                                toCompare = getRegisterValue(reg2);
+                            }
+                        } else {
+                            try {
+                                toCompare = Integer.parseInt(param3);
+                            } catch (NumberFormatException e) {
+                                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, param3);
+                                isComplete = true;
+                                return true;
+                            }
+                        }
+
+                        switch (param2) {
+                            case "<" -> {
+                                if (num < toCompare) {
+                                    checkAndJump(params, 4);
+                                    return false;
+                                }
+                            }
+                            case "<=" -> {
+                                if (num <= toCompare) {
+                                    checkAndJump(params, 4);
+                                    return false;
+                                }
+                            }
+                            case "==" -> {
+                                if (num == toCompare) {
+                                    checkAndJump(params, 4);
+                                    return false;
+                                }
+                            }
+                            case ">=" -> {
+                                if (num >= toCompare) {
+                                    checkAndJump(params, 4);
+                                    return false;
+                                }
+                            }
+                            case ">" -> {
+                                if (num > toCompare) {
+                                    checkAndJump(params, 4);
+                                    return false;
+                                }
+                            }
+                        }
+                    } else {
+                        MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_OPERANT, commandPointer + 1, param2);
+                        isComplete = true;
+                    }
+                }
+            } else {
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_PARAM_REQUIRED, commandPointer + 1, "Register, Operant, Register ODER Integer, Zeilenindex");
+                isComplete = true;
+            }
+
             return true;
         });
 
@@ -508,8 +590,8 @@ public class CodeManager {
     private void checkAndJump(List<String> params, int paramIndex) {
         try {
             int index = Integer.parseInt(params.get(paramIndex));
-            if(index < 1 || index > scriptSize) {
-                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_INVALID_PARAMETER, commandPointer + 1, params.get(paramIndex));
+            if (index < 1 || index > scriptSize) {
+                MainWindow.exceptions.throwErr(Exceptions.EXCPARAM_UNKNOWN_LINE_INDEX, commandPointer + 1, params.get(paramIndex));
                 isComplete = true;
             } else {
                 commandPointer = index - 1;
@@ -524,10 +606,11 @@ public class CodeManager {
         String[] args = input.split(":");
         try {
             int reg = Integer.parseInt(args[1]);
-            if(reg > 0 && reg < 21) {
+            if (reg > 0 && reg < 21) {
                 return reg;
             }
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
         return -1;
     }
 

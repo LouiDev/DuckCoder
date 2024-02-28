@@ -7,8 +7,12 @@ public class Exceptions {
 
     public static String EXC_CAN_NOT_LEAVE_GRID = "Ente kann das Spielfeld nicht verlassen";
     public static String EXC_INVALID_COMMAND = "Unbekannter Befehl";
+    public static String EXCPARAM_UNKNOW_REGISTER = "Unbekanntes Register: ";
+    public static String EXCPARAM_UNKNOWN_LINE_INDEX = "Unbekannter Zeilenindex: ";
     public static String EXCPARAM_INVALID_PARAMETER = "Ungültiger Parameter: ";
     public static String EXCPARAM_PARAM_REQUIRED = "Parameter erwartet: ";
+    public static String EXCPARAM_UNKNOWN_ATTRIBUTE = "Unbekanntes Attribut: ";
+    public static String EXCPARAM_INVALID_OPERANT = "Ungültiger Operant: ";
 
     public Exceptions(MainWindow.WindowPanel panel) {
         this.panel = panel;
