@@ -10,8 +10,8 @@ DuckCoder ist noch in Entwicklung und unvollständig. Grundlegende Funktionen si
 Auf dem [DuckCoder Discord Server](https://discord.gg/8bjtfwsBxH) werden regelmäßig updates und Ankündigungen gepostet. Dort findet man auch alle wichtigen Dateien, Dokumentationen und anderes an einem Ort.
 Außerdem gibt es dort die Möglichkeit für Feedback und Feature Vorschläge.
 
-Reddit: https://www.reddit.com/r/DuckCoder/
-Discord: https://discord.gg/8bjtfwsBxH
+- Reddit: [r/DuckCoder](https://www.reddit.com/r/DuckCoder/)
+- Discord: [DuckCoder](https://discord.gg/8bjtfwsBxH)
 
 # Downloads
 Zurzeit gibt es zwei einen Alpha Release als Download zum Austesten der aktuellen Funktionen.
